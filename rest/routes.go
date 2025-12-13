@@ -1,11 +1,11 @@
 // Package cmd
-package cmd
+package rest
 
 import (
 	"net/http"
 
-	"crud/handlers"
-	"crud/middleware"
+	"crud/rest/handlers"
+	"crud/rest/middleware"
 )
 
 func initRoute(mux *http.ServeMux, manager *middleware.Manager) {
