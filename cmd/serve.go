@@ -5,11 +5,14 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"crud/config"
 	"crud/middleware"
 )
 
 func Serve() {
+	cnf := config.GetConfig()
 	manager := middleware.NewManager()
 	manager.Use(
 		middleware.Preflight,
@@ -22,7 +25,8 @@ func Serve() {
 
 	initRoute(mux, manager)
 
-	err := http.ListenAndServe(":8080", wrappedMux)
+	addr := ":" + strconv.Itoa(cnf.HTTPPort)
+	err := http.ListenAndServe(addr, wrappedMux)
 	if err != nil {
 		fmt.Println("Error startting the server", err)
 	}
