@@ -33,20 +33,20 @@ func Get(productID int) *Product {
 func Update(p Product) {
 	for index, product := range productList {
 		if product.ID == p.ID {
-			productList[index] = product
+			productList[index] = p
 		}
 	}
 }
 
 func Delete(pID int) {
-	var temp []Product
-	for index, product := range productList {
+	var tempList []Product
+	for _, product := range productList {
 		if product.ID != pID {
-			temp[index] = product
+			tempList = append(tempList, product)
 		}
 	}
 
-	productList = temp
+	productList = tempList
 }
 
 func init() {

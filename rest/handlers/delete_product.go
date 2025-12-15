@@ -8,7 +8,7 @@ import (
 	"crud/util"
 )
 
-func GetProductByID(w http.ResponseWriter, r *http.Request) {
+func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	productID := r.PathValue("id")
 
 	pID, err := strconv.Atoi(productID)
@@ -17,12 +17,6 @@ func GetProductByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := database.Get(pID)
-
-	if product == nil {
-		util.SendError(w, "Product not found", 404)
-		return
-	}
-
-	util.SendData(w, product, 200)
+	database.Delete(pID)
+	util.SendData(w, "Successfully deleted product", 200)
 }
