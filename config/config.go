@@ -11,9 +11,10 @@ import (
 var configurations Config
 
 type Config struct {
-	Version     string
-	ServiceName string
-	HTTPPort    int
+	Version      string
+	ServiceName  string
+	HTTPPort     int
+	JwtSecretKey string
 }
 
 func loadConfig() {
@@ -39,10 +40,16 @@ func loadConfig() {
 		fmt.Println("failed to convert")
 		return
 	}
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+	if jwtSecretKey == "" {
+		fmt.Println("Jwt secret is required")
+		os.Exit(1)
+	}
 	configurations = Config{
-		Version:     version,
-		ServiceName: serviceName,
-		HTTPPort:    convertedHttpport,
+		Version:      version,
+		ServiceName:  serviceName,
+		HTTPPort:     convertedHttpport,
+		JwtSecretKey: jwtSecretKey,
 	}
 }
 

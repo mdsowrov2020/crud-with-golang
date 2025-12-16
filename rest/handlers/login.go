@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"crud/config"
 	"crud/database"
 	"crud/util"
 )
@@ -22,11 +23,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Request Data", http.StatusBadRequest)
 	}
 
-	loggedInUser := database.Find(reqLogin.Email, reqLogin.Password)
-	if loggedInUser == nil {
+	usr := database.Find(reqLogin.Email, reqLogin.Password)
+	if usr == nil {
 		http.Error(w, "Invalid credentials", http.StatusBadRequest)
 		return
 	}
 
-	util.SendData(w, loggedInUser, http.StatusCreated)
+	cnf := config.GetConfig()
+
+	accessToken, err := util.CreateJWT(cnf.JwtSecretKey, util.Payload{
+		Sub:         usr.ID,
+		FirstName:   usr.FirstName,
+		LastName:    usr.LastName,
+		Email:       usr.Email,
+		IsShopOwner: usr.IsShopOwner,
+	})
+	if err != nil {
+		http.Error(w, "Internal server erro", http.StatusInternalServerError)
+		return
+	}
+
+	util.SendData(w, accessToken, http.StatusCreated)
 }
