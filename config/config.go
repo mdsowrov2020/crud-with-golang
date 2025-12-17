@@ -53,12 +53,12 @@ func loadConfig() {
 	}
 }
 
-func GetConfig() Config {
+func GetConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Failed to load the env file: ", err)
 		os.Exit(1)
 	}
 	loadConfig()
-	return configurations
+	return &configurations
 }

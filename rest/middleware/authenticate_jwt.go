@@ -7,11 +7,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"crud/config"
 )
 
-func AuthenticateJWT(next http.Handler) http.Handler {
+func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 
@@ -40,9 +38,8 @@ func AuthenticateJWT(next http.Handler) http.Handler {
 		jwtPayload := tokenParts[1]
 		jwtSignature := tokenParts[2]
 
-		cnf := config.GetConfig()
 		message := jwtHeader + "." + jwtPayload
-		bytArrSecret := []byte(cnf.JwtSecretKey)
+		bytArrSecret := []byte(m.cnf.JwtSecretKey)
 		bytMessage := []byte(message)
 
 		h := hmac.New(sha256.New, bytArrSecret)
