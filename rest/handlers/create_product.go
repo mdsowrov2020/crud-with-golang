@@ -19,5 +19,5 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	createdProduct := database.Store(newProduct)
 
-	util.SendData(w, createdProduct, 201)
+	util.SendData(w, createdProduct, http.StatusCreated)
 }
