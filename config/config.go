@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var configurations Config
+var configurations *Config
 
 type Config struct {
 	Version      string
@@ -18,6 +18,11 @@ type Config struct {
 }
 
 func loadConfig() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Failed to load the env file: ", err)
+		os.Exit(1)
+	}
 	version := os.Getenv("VERSION")
 	if version == "" {
 		fmt.Println("Version is required")
@@ -45,7 +50,7 @@ func loadConfig() {
 		fmt.Println("Jwt secret is required")
 		os.Exit(1)
 	}
-	configurations = Config{
+	configurations = &Config{
 		Version:      version,
 		ServiceName:  serviceName,
 		HTTPPort:     convertedHttpport,
@@ -54,11 +59,8 @@ func loadConfig() {
 }
 
 func GetConfig() *Config {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Failed to load the env file: ", err)
-		os.Exit(1)
+	if configurations == nil {
+		loadConfig()
 	}
-	loadConfig()
-	return &configurations
+	return configurations
 }
