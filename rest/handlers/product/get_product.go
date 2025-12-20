@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"crud/database"
 	"crud/util"
 )
 
@@ -17,12 +16,16 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := database.Get(pID)
+	product, err := h.productRepo.Get(pID)
+	if err != nil {
 
+		util.SendError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
 	if product == nil {
-		util.SendError(w, "Product not found", 404)
+		util.SendError(w, http.StatusNotFound, "Product not found")
 		return
 	}
 
-	util.SendData(w, product, 200)
+	util.SendData(w, http.StatusOK, product)
 }

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"crud/config"
-	"crud/database"
 	"crud/util"
 )
 
@@ -23,15 +21,12 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Request Data", http.StatusBadRequest)
 	}
 
-	usr := database.Find(reqLogin.Email, reqLogin.Password)
-	if usr == nil {
-		http.Error(w, "Invalid credentials", http.StatusBadRequest)
-		return
+	usr, err := h.userRepo.Find(reqLogin.Email, reqLogin.Password)
+	if err != nil {
+		http.Error(w, "Unauthorized user", http.StatusUnauthorized)
 	}
 
-	cnf := config.GetConfig()
-
-	accessToken, err := util.CreateJWT(cnf.JwtSecretKey, util.Payload{
+	accessToken, err := util.CreateJWT(h.cnf.JwtSecretKey, util.Payload{
 		Sub:         usr.ID,
 		FirstName:   usr.FirstName,
 		LastName:    usr.LastName,
@@ -43,5 +38,5 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.SendData(w, accessToken, http.StatusCreated)
+	util.SendData(w, http.StatusCreated, accessToken)
 }

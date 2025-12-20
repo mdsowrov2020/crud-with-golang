@@ -20,7 +20,6 @@ func (mngr *Manager) Use(middlewares ...Middleware) *Manager {
 	return mngr
 }
 
-// func (mngr *Manager) With(middlewares ...Middleware) Middleware {
 func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Handler {
 	n := next
 

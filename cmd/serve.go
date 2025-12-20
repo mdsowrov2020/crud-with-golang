@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"crud/config"
+	"crud/repo"
 	"crud/rest"
 	"crud/rest/handlers/product"
 	"crud/rest/handlers/user"
@@ -13,9 +14,19 @@ import (
 func Serve() {
 	cnf := config.GetConfig()
 	// rest.Start(cnf)
+
+	productRepo := repo.NewProductRepo()
+	userRepo := repo.NewUserRepo()
+
 	middlewares := middleware.NewMiddlewares(cnf)
-	productHandler := product.NewHandler(middlewares)
-	userHandler := user.NewHandler()
-	server := rest.NewServer(cnf, productHandler, userHandler)
+
+	productHandler := product.NewHandler(middlewares, productRepo)
+	userHandler := user.NewHandler(cnf, userRepo)
+
+	server := rest.NewServer(
+		cnf,
+		productHandler,
+		userHandler,
+	)
 	server.Start()
 }

@@ -5,28 +5,46 @@ import (
 	"net/http"
 	"strconv"
 
-	"crud/database"
+	"crud/repo"
 	"crud/util"
 )
+
+type RequestUpdateProduct struct {
+	Title       string  `json:"title"`
+	Price       float64 `json:"price"`
+	Description string  `json:"description"`
+	ImageURL    string  `json:"imageUrl"`
+}
 
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	productID := r.PathValue("id")
 
 	pID, err := strconv.Atoi(productID)
 	if err != nil {
-		http.Error(w, "Please provide a valid product id", 400)
+		util.SendError(w, http.StatusBadRequest, "Invalid product id")
 		return
 	}
 
-	var newProduct database.Product
+	var req RequestUpdateProduct
 
 	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&newProduct)
+	err = decoder.Decode(&req)
 	if err != nil {
-		http.Error(w, "Please provide a valid JSON", 400)
+		util.SendError(w, http.StatusBadRequest, "Invalid request body")
+		return
 	}
 
-	newProduct.ID = pID
-	database.Update(newProduct)
-	util.SendData(w, "Successfully updated product", 201)
+	// req.ID = pID
+	_, err = h.productRepo.Update(repo.Product{
+		ID:          pID,
+		Title:       req.Title,
+		Price:       req.Price,
+		Description: req.Description,
+		ImageURL:    req.ImageURL,
+	})
+	if err != nil {
+		util.SendError(w, http.StatusInternalServerError, "Internal server error")
+	}
+
+	util.SendData(w, http.StatusCreated, "Successfully updated product")
 }
