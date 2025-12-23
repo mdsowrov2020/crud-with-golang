@@ -42,6 +42,7 @@ func (r *productRepo) Get(id int) (*Product, error) {
 	description,
 	price,
 	imageurl
+	from products
 	where id = $1
 
 	`
@@ -57,24 +58,15 @@ func (r *productRepo) Get(id int) (*Product, error) {
 }
 
 func (r *productRepo) List() ([]*Product, error) {
-	var prdList []*Product
+	// var prdList []*Product
+	prdList := []*Product{}
 
-	query := `
-
-	select 
-	id,
-	title,
-	description,
-	price,
-	imageurl
-
-
-	`
+	query := `select id, title, price, description, imageurl from products`
 	err := r.db.Select(&prdList, query)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
+		// if err == sql.ErrNoRows {
+		// 	return nil, nil
+		// }
 		return nil, err
 	}
 
@@ -132,7 +124,7 @@ func (r *productRepo) Update(p Product) (*Product, error) {
 		
 	`
 
-	row := r.db.QueryRow(query, p.Title, p.Description, p.Price, p.ImageURL)
+	row := r.db.QueryRow(query, p.Title, p.Description, p.Price, p.ImageURL, p.ID)
 	err := row.Err()
 	if err != nil {
 		return nil, err

@@ -44,6 +44,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		util.SendError(w, http.StatusInternalServerError, "Internal server error")
+		return
 	}
 
 	util.SendData(w, http.StatusCreated, "Successfully updated product")
