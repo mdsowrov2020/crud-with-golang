@@ -3,7 +3,11 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"crud/config"
+	"crud/infra/db"
 	"crud/repo"
 	"crud/rest"
 	"crud/rest/handlers/product"
@@ -13,6 +17,12 @@ import (
 
 func Serve() {
 	cnf := config.GetConfig()
+
+	dbCon, err := db.GetConnection()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	// rest.Start(cnf)
 
 	productRepo := repo.NewProductRepo()
